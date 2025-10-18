@@ -3,7 +3,7 @@
   "image": "java11-fortivpn:latest",
   "remoteUser": "dev",
   "mounts": ["type=volume,source=mdaq-maven,target=/home/dev/.m2", "type=volume,source=mdaq-gradle,target=/home/dev/.gradle"],
-  "runArgs": ["--env-file", "${localWorkspaceFolder}/.devcontainer/.env", "--device=/dev/ppp", "--cap-add=NET_ADMIN ", "--cap-add=NET_RAW"],
+  "runArgs": ["--env-file", "${localWorkspaceFolder}/.devcontainer/.env", "--device=/dev/ppp", "--cap-add=NET_ADMIN", "--cap-add=NET_RAW"],
   "overrideCommand": false,
   // "postCreateCommand": "sudo apt-get update && sudo apt-get install -y git maven",
   // "postStartCommand": "openfortivpn $VPN_HOST -u $VPN_USER -p $VPN_PASS --trusted-cert $VPN_CERT --persistent=1",
