@@ -2,10 +2,17 @@
   "name": "mdaq-intellij-java11",
   "image": "java11-fortivpn:latest",
   "remoteUser": "dev",
-  "mounts": ["type=volume,source=mdaq-maven,target=/home/dev/.m2", "type=volume,source=mdaq-gradle,target=/home/dev/.gradle"],
+  "mounts": [
+    "type=volume,source=mdaq-maven,target=/home/dev/.m2", 
+    "type=volume,source=mdaq-gradle,target=/home/dev/.gradle",
+    "type=bind,source=${localWorkspaceFolder}/.ssh/mdaq,target=/home/dev/.ssh/mdaq,readonly",
+    "type=bind,source=${localWorkspaceFolder}/.ssh/known_hosts,target=/home/dev/.ssh/known_hosts,readonly",
+    "type=bind,source=${localWorkspaceFolder}/.ssh/config,target=/home/dev/.ssh/config,readonly"
+  ],
   "runArgs": ["--env-file", "${localWorkspaceFolder}/.devcontainer/.env", "--device=/dev/ppp", "--cap-add=NET_ADMIN", "--cap-add=NET_RAW"],
   "overrideCommand": false,
   // "postCreateCommand": "sudo apt-get update && sudo apt-get install -y git maven",
+  "postCreateCommand": "chmod 700 ~/.ssh && chmod 600 ~/.ssh/mdaq ~/.ssh/known_hosts ~/.ssh/config",
   // "postStartCommand": "openfortivpn $VPN_HOST -u $VPN_USER -p $VPN_PASS --trusted-cert $VPN_CERT --persistent=1",
   "customizations": {
     "jetbrains": {
