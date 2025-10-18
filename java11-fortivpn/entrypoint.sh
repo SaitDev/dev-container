@@ -22,8 +22,7 @@ echo "🔐 Connecting to VPN at $VPN_HOST ..."
 # --set-dns=1 requires resolvconf to be installed (we installed it)
 sudo /usr/bin/openfortivpn "$VPN_HOST" \
   -u "$VPN_USER" -p "$VPN_PASS" --trusted-cert "$VPN_CERT" \
-  --persistent=1 \
-  --log-level=3 &
+  --persistent=1 &
 VPN_PID=$!
 
 #--set-dns=1 --pppd-use-peerdns
