@@ -10,7 +10,7 @@ RUN apt-get update && \
 # --- Install prerequisites ---
 RUN apt-get update && \
     apt-get install -y --no-install-recommends \
-      sudo iptables iproute2 iputils-ping net-tools resolvconf ppp ca-certificates && \
+      sudo iptables iproute2 iputils-ping net-tools resolvconf ppp ca-certificates git && \
     rm -rf /var/lib/apt/lists/*
 
 # --- Non-root user ---
