@@ -4,13 +4,13 @@ FROM eclipse-temurin:11-jdk
 # The official FortiClient is not open source; you must fetch it from Fortinet.
 # Example uses a public lightweight CLI wrapper 'openfortivpn' (simpler & scriptable)
 RUN apt-get update && \
-   apt-get install -y openfortivpn && \
-   rm -rf /var/lib/apt/lists/*
+   apt-get install -y openfortivpn
 
 # --- Install prerequisites ---
-RUN apt-get update && \
-    apt-get install -y --no-install-recommends \
-      sudo iptables iproute2 iputils-ping net-tools resolvconf ppp ca-certificates git && \
+RUN apt-get install -y --no-install-recommends \
+      sudo iptables iproute2 iputils-ping net-tools resolvconf ppp ca-certificates
+
+RUN apt-get install -y git && \
     rm -rf /var/lib/apt/lists/*
 
 # --- Non-root user ---

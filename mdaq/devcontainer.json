@@ -6,7 +6,6 @@
     "type=volume,source=mdaq-maven,target=/home/dev/.m2", 
     "type=volume,source=mdaq-gradle,target=/home/dev/.gradle",
     "type=bind,source=${localWorkspaceFolder}/.ssh/mdaq,target=/home/dev/.ssh/mdaq,readonly",
-    "type=bind,source=${localWorkspaceFolder}/.ssh/known_hosts,target=/home/dev/.ssh/known_hosts",
     "type=bind,source=${localWorkspaceFolder}/.ssh/config,target=/home/dev/.ssh/config,readonly"
   ],
   "runArgs": ["--env-file", "${localWorkspaceFolder}/.devcontainer/.env", "--device=/dev/ppp", "--cap-add=NET_ADMIN", "--cap-add=NET_RAW"],
