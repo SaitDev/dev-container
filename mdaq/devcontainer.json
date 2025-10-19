@@ -11,7 +11,7 @@
   "runArgs": ["--env-file", "${localWorkspaceFolder}/.devcontainer/.env", "--device=/dev/ppp", "--cap-add=NET_ADMIN", "--cap-add=NET_RAW"],
   "overrideCommand": false,
   // "postCreateCommand": "sudo apt-get update && sudo apt-get install -y git maven",
-  "postCreateCommand": "chmod 700 ~/.ssh",
+  "postStartCommand": "chmod 700 ~/.ssh",
   // "postStartCommand": "openfortivpn $VPN_HOST -u $VPN_USER -p $VPN_PASS --trusted-cert $VPN_CERT --persistent=1",
   "customizations": {
     "jetbrains": {

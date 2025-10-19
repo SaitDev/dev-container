@@ -1,5 +1,7 @@
 FROM eclipse-temurin:11-jdk
 
+ENV TZ="Asia/Ho_Chi_Minh"
+
 # --- Install FortiClient VPN CLI ---
 # The official FortiClient is not open source; you must fetch it from Fortinet.
 # Example uses a public lightweight CLI wrapper 'openfortivpn' (simpler & scriptable)
@@ -16,6 +18,12 @@ RUN apt-get install -y git && \
 # --- Non-root user ---
 ARG USER=dev
 RUN useradd -m ${USER}
+
+# create ssh config folder
+RUN mkdir -p /home/${USER}/.ssh && \
+        chown ${USER}:${USER} /home/${USER}/.ssh && \
+        chmod 700 /home/${USER}/.ssh
+
 # Allow just the VPN command via sudo without password
 # If use Fortinet's official CLI, replace /usr/bin/openfortivpn with /usr/bin/forticlientsslvpn_cli
 # RUN echo "${USER} ALL=(ALL) NOPASSWD: /usr/bin/openfortivpn" > /etc/sudoers.d/${USER} && \
