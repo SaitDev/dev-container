@@ -1,5 +1,5 @@
-FROM eclipse-temurin:11.0.28_6-jdk-jammy
-# ubuntu 22
+FROM eclipse-temurin:17.0.16_8-jdk-noble
+# ubuntu 24
 
 ENV TZ="Asia/Ho_Chi_Minh"
 
@@ -12,6 +12,8 @@ RUN apt-get update && \
 # --- Install vpn prerequisites ---
 RUN apt-get install -y --no-install-recommends \
       sudo iptables iproute2 iputils-ping net-tools resolvconf ppp ca-certificates
+
+RUN apt-get install -y curl
 
 RUN apt-get install -y git && \
     rm -rf /var/lib/apt/lists/*

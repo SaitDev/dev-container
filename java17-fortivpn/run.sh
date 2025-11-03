@@ -1,0 +1,1 @@
+docker run --rm -it --device=/dev/net/tun --device=/dev/ppp --cap-add=NET_ADMIN --cap-add=NET_RAW --env-file .env java17-fortivpn:latest
