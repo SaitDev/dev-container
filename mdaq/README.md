@@ -1,0 +1,1 @@
+- make sure .ssh folder is chown by the same user with the one used by intellij remote

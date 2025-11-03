@@ -3,8 +3,8 @@
   "image": "java17-fortivpn:latest",
   "remoteUser": "dev",
   "mounts": [
-    "type=volume,source=mdaq-maven,target=/home/dev/.m2", 
-    "type=volume,source=mdaq-gradle,target=/home/dev/.gradle",
+    "type=volume,source=mdaq-maven-j17,target=/home/dev/.m2", 
+    "type=volume,source=mdaq-gradle-j17,target=/home/dev/.gradle",
     "type=bind,source=${localWorkspaceFolder}/../.ssh/mdaq,target=/home/dev/.ssh/mdaq,readonly",
     "type=bind,source=${localWorkspaceFolder}/../.ssh/config,target=/home/dev/.ssh/config,readonly"
   ],
