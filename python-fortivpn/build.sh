@@ -1,0 +1,1 @@
+cd .. && docker build -f python-fortivpn/Dockerfile -t python3.13-fortivpn .

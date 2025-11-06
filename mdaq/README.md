@@ -1,1 +1,2 @@
-- make sure .ssh folder is chown by the same user with the one used by intellij remote
+- make sure .ssh folder is chown by the same user with the one used by intellij remote, and chmod 600
+- ensure permissions on caches maven/gradle, maybe just chmod 777
