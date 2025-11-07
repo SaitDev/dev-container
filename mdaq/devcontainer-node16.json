@@ -1,0 +1,20 @@
+{
+  "name": "mdaq-intellij-node16",
+  "image": "node16-fortivpn:latest",
+  "remoteUser": "dev",
+  "mounts": [
+    "type=volume,source=mdaq-npm,target=/home/dev/.npm", 
+    "type=volume,source=mdaq-yarn,target=/home/dev/.cache/yarn",
+    "type=volume,source=mdaq-pnpm,target=/home/dev/.pnpm-store",
+    "type=bind,source=${localWorkspaceFolder}/../.ssh/mdaq,target=/home/dev/.ssh/shared/mdaq,readonly",
+    "type=bind,source=${localWorkspaceFolder}/../.ssh/config,target=/home/dev/.ssh/shared/config,readonly"
+  ],
+  "runArgs": ["--env-file", "${localWorkspaceFolder}/.devcontainer/.env", "--device=/dev/ppp", "--cap-add=NET_ADMIN", "--cap-add=NET_RAW"],
+  "overrideCommand": false,
+  "postStartCommand": "/usr/local/bin/setup-ssh.sh",
+  "customizations": {
+    "jetbrains": {
+      "backend": "WebStorm"
+    }
+  }
+}

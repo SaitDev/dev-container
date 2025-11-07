@@ -1,2 +1,2 @@
-- make sure .ssh folder is chown by the same user with the one used by intellij remote, and chmod 600
+- make sure .ssh folder is chown by the same user with the one used by intellij remote, and chmod 600 config, key. also when connect to container, use same user(uid + gid) as intellij remote
 - ensure permissions on caches maven/gradle, maybe just chmod 777

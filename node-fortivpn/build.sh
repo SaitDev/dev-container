@@ -1,0 +1,1 @@
+cd .. && docker build -f node-fortivpn/Dockerfile -t node16-fortivpn .

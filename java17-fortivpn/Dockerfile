@@ -1,5 +1,5 @@
 FROM eclipse-temurin:17.0.16_8-jdk-noble
-# ubuntu 24
+# ubuntu 24, no slim version but good enough ~190MB, alpine is only 30MB smaller 
 
 ENV TZ="Asia/Ho_Chi_Minh"
 

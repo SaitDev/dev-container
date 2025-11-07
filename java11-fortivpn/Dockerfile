@@ -1,5 +1,5 @@
 FROM eclipse-temurin:11.0.28_6-jdk-jammy
-# ubuntu 22
+# ubuntu 22, no slim version but good enough ~182MB, alpine is only 30MB smaller 
 
 ENV TZ="Asia/Ho_Chi_Minh"
 
