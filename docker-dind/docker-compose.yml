@@ -1,0 +1,23 @@
+services:
+  dind:
+    image: docker:28.5-dind
+    privileged: true
+    restart: unless-stopped
+    environment:
+      DOCKER_TLS_CERTDIR: ""
+      DOCKER_HOST: "unix:///var/run/dind/docker.sock"
+    volumes:
+      - dind-runtime:/var/run/dind
+    networks:
+      - dev-dind
+    command:
+      - --host=unix:///var/run/dind/docker.sock
+    stop_grace_period: 1m
+
+volumes:
+  dind-runtime:
+    name: dind-runtime
+
+networks:
+  dev-dind:
+    driver: bridge

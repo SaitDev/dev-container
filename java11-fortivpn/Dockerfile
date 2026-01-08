@@ -1,3 +1,5 @@
+FROM docker:28.5-cli AS dockercli
+
 FROM eclipse-temurin:11.0.28_6-jdk-jammy
 # ubuntu 22, no slim version but good enough ~182MB, alpine is only 30MB smaller 
 
@@ -11,19 +13,28 @@ RUN apt-get update && \
 
 # --- Install vpn prerequisites ---
 RUN apt-get install -y --no-install-recommends \
-      sudo iptables iproute2 iputils-ping net-tools resolvconf ppp ca-certificates
+      sudo iptables iproute2 iputils-ping net-tools ppp ca-certificates
+
+RUN apt-get install -y curl
 
 RUN apt-get install -y git && \
     rm -rf /var/lib/apt/lists/*
 
+COPY --from=dockercli /usr/local/bin/docker /usr/local/bin/docker
+
+COPY scripts/download-codex.sh /usr/local/bin/scripts/download-codex.sh
+RUN chmod +x /usr/local/bin/scripts/download-codex.sh
 RUN mkdir -p /opt/codex; \
-    curl -fL -o /tmp/codex.tar.gz "https://github.com/openai/codex/releases/latest/download/codex-x86_64-unknown-linux-gnu.tar.gz"; \
-    ls -la /tmp; \
-    tar -xzvf /tmp/codex.tar.gz -C /opt/codex; \
-    ls -la /opt/codex; \
-    rm -f /tmp/codex.tar.gz; \
+    /usr/local/bin/scripts/download-codex.sh; \
     ln -sf /opt/codex/codex-x86_64-unknown-linux-gnu /usr/local/bin/codex
 
+# RUN mkdir -p /opt/codex; \
+#     curl -fL -o /tmp/codex.tar.gz "https://github.com/openai/codex/releases/latest/download/codex-x86_64-unknown-linux-gnu.tar.gz"; \
+#     ls -la /tmp; \
+#     tar -xzvf /tmp/codex.tar.gz -C /opt/codex; \
+#     ls -la /opt/codex; \
+#     rm -f /tmp/codex.tar.gz; \
+#     ln -sf /opt/codex/codex-x86_64-unknown-linux-gnu /usr/local/bin/codex
 # --- Non-root user ---
 ARG USER=dev
 RUN useradd -m ${USER}
@@ -38,13 +49,15 @@ RUN mkdir -p /home/${USER}/.ssh && \
 # RUN echo "${USER} ALL=(ALL) NOPASSWD: /usr/bin/openfortivpn" > /etc/sudoers.d/${USER} && \
 #     chmod 440 /etc/sudoers.d/${USER}
 
-# --- Copy entrypoint & make it executable ---
+# --- Copy scripts & make it executable ---
 # COPY --chown=${USER}:${USER} entrypoint.sh /usr/local/bin/entrypoint.sh
-COPY entrypoint.sh /usr/local/bin/entrypoint.sh
+
+COPY scripts/entrypoint-fortivpn.sh /usr/local/bin/entrypoint.sh
 RUN chmod +x /usr/local/bin/entrypoint.sh
+
+COPY scripts/setup-ssh.sh /usr/local/bin/setup-ssh.sh
+RUN chmod +x /usr/local/bin/setup-ssh.sh
 
 # USER ${USER}
 WORKDIR /home/${USER}
 ENTRYPOINT ["/usr/local/bin/entrypoint.sh"]
-
-

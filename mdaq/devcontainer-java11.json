@@ -5,13 +5,21 @@
   "mounts": [
     "type=volume,source=mdaq-maven,target=/home/dev/.m2", 
     "type=volume,source=mdaq-gradle,target=/home/dev/.gradle",
-    "type=bind,source=${localWorkspaceFolder}/.ssh/mdaq,target=/home/dev/.ssh/mdaq,readonly",
-    "type=bind,source=${localWorkspaceFolder}/.ssh/config,target=/home/dev/.ssh/config,readonly"
+    "type=bind,source=${localWorkspaceFolder}/../ssh/mdaq,target=/home/dev/.ssh/shared/mdaq,readonly",
+    "type=bind,source=${localWorkspaceFolder}/../ssh/config,target=/home/dev/.ssh/shared/config,readonly",
+    "type=volume,source=dind-runtime,target=/var/run/dind"
   ],
-  "runArgs": ["--env-file", "${localWorkspaceFolder}/.devcontainer/.env", "--device=/dev/ppp", "--cap-add=NET_ADMIN", "--cap-add=NET_RAW"],
+  "runArgs": [
+    "--name", "mdaq-intellij-java11",
+    "--env-file", "${localWorkspaceFolder}/.devcontainer/.env", 
+    "--device=/dev/ppp", "--cap-add=NET_ADMIN", "--cap-add=NET_RAW"
+  ],
+  "remoteEnv": {
+    "DOCKER_HOST": "unix:///var/run/dind/docker.sock"
+  },
   "overrideCommand": false,
   // "postCreateCommand": "sudo apt-get update && sudo apt-get install -y git maven",
-  "postStartCommand": "chmod 700 ~/.ssh",
+  "postStartCommand": "/usr/local/bin/setup-ssh.sh",
   // "postStartCommand": "openfortivpn $VPN_HOST -u $VPN_USER -p $VPN_PASS --trusted-cert $VPN_CERT --persistent=1",
   "customizations": {
     "jetbrains": {

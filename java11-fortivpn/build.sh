@@ -1,1 +1,1 @@
-docker build -t java11-fortivpn .
+cd .. && docker build -f java11-fortivpn/Dockerfile -t java11-fortivpn .
