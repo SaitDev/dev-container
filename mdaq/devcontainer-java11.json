@@ -2,6 +2,7 @@
   "name": "mdaq-intellij-java11",
   "image": "java11-fortivpn:latest",
   "remoteUser": "dev",
+  "updateRemoteUserUID": false,
   "mounts": [
     "type=volume,source=mdaq-maven,target=/home/dev/.m2", 
     "type=volume,source=mdaq-gradle,target=/home/dev/.gradle",
