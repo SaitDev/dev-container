@@ -11,6 +11,7 @@
   ],
   "runArgs": [
     "--name", "mdaq-intellij-java11",
+    "--network", "dev-dind",
     "--env-file", "${localWorkspaceFolder}/.devcontainer/.env", 
     "--device=/dev/ppp", "--cap-add=NET_ADMIN", "--cap-add=NET_RAW"
   ],

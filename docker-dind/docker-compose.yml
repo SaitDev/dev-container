@@ -20,4 +20,5 @@ volumes:
 
 networks:
   dev-dind:
+    name: dev-dind
     driver: bridge
