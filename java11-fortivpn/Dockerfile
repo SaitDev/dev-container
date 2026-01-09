@@ -1,7 +1,7 @@
 FROM docker:28.5-cli AS dockercli
 
-FROM eclipse-temurin:11.0.28_6-jdk-jammy
-# ubuntu 22, no slim version but good enough ~182MB, alpine is only 30MB smaller 
+FROM eclipse-temurin:11.0.29_7-jdk-noble
+# ubuntu 24, no slim version but good enough ~182MB, alpine is only 30MB smaller 
 
 ENV TZ="Asia/Ho_Chi_Minh"
 
