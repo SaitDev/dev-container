@@ -22,22 +22,28 @@ RUN apt-get install -y git && \
 
 COPY --from=dockercli /usr/local/bin/docker /usr/local/bin/docker
 
+# --- Non-root user ---
+ARG USER=dev
+RUN useradd -m ${USER}
+
+# --- Install jenv ---
+ENV JENV_ROOT=/home/${USER}/.jenv
+RUN git clone https://github.com/jenv/jenv.git "${JENV_ROOT}" && \
+    chown -R ${USER}:${USER} "${JENV_ROOT}" && \
+    printf '%s\n' \
+      "export JENV_ROOT=${JENV_ROOT}" \
+      'export PATH="$JENV_ROOT/bin:$PATH"' \
+      'if command -v jenv >/dev/null 2>&1; then' \
+      '  eval "$(jenv init -)"' \
+      'fi' \
+      > /etc/profile.d/jenv.sh
+
+# --- Install Codex
 COPY scripts/download-codex.sh /usr/local/bin/scripts/download-codex.sh
 RUN chmod +x /usr/local/bin/scripts/download-codex.sh
 RUN mkdir -p /opt/codex; \
     /usr/local/bin/scripts/download-codex.sh; \
     ln -sf /opt/codex/codex-x86_64-unknown-linux-gnu /usr/local/bin/codex
-
-# RUN mkdir -p /opt/codex; \
-#     curl -fL -o /tmp/codex.tar.gz "https://github.com/openai/codex/releases/latest/download/codex-x86_64-unknown-linux-gnu.tar.gz"; \
-#     ls -la /tmp; \
-#     tar -xzvf /tmp/codex.tar.gz -C /opt/codex; \
-#     ls -la /opt/codex; \
-#     rm -f /tmp/codex.tar.gz; \
-#     ln -sf /opt/codex/codex-x86_64-unknown-linux-gnu /usr/local/bin/codex
-# --- Non-root user ---
-ARG USER=dev
-RUN useradd -m ${USER}
 
 # create ssh config folder
 RUN mkdir -p /home/${USER}/.ssh && \
@@ -57,6 +63,9 @@ RUN chmod +x /usr/local/bin/entrypoint.sh
 
 COPY scripts/setup-ssh.sh /usr/local/bin/setup-ssh.sh
 RUN chmod +x /usr/local/bin/setup-ssh.sh
+
+COPY scripts/install-temurin.sh /usr/local/bin/install-temurin.sh
+RUN chmod +x /usr/local/bin/install-temurin.sh
 
 # USER ${USER}
 WORKDIR /home/${USER}
