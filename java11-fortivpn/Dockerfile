@@ -17,6 +17,7 @@ RUN apt-get install -y --no-install-recommends \
 
 RUN apt-get install -y curl
 RUN apt-get install -y git ripgrep
+RUN apt-get install -y zsh
 
 RUN rm -rf /var/lib/apt/lists/*
 
@@ -25,6 +26,11 @@ COPY --from=dockercli /usr/local/bin/docker /usr/local/bin/docker
 # --- Non-root user ---
 ARG USER=dev
 RUN useradd -m ${USER}
+
+# --- Install Oh My Zsh ---
+RUN git clone --depth=1 https://github.com/ohmyzsh/ohmyzsh.git /home/${USER}/.oh-my-zsh && \
+    cp /home/${USER}/.oh-my-zsh/templates/zshrc.zsh-template /home/${USER}/.zshrc && \
+    chown -R ${USER}:${USER} /home/${USER}/.oh-my-zsh /home/${USER}/.zshrc
 
 # --- Install JDK 17
 COPY scripts/install-temurin.sh /usr/local/bin/install-temurin.sh
