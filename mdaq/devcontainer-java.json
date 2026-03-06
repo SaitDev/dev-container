@@ -8,6 +8,7 @@
     "type=volume,source=mdaq-gradle,target=/home/dev/.gradle",
     "type=bind,source=${localWorkspaceFolder}/../ssh/mdaq,target=/home/dev/.ssh/shared/mdaq,readonly",
     "type=bind,source=${localWorkspaceFolder}/../ssh/config,target=/home/dev/.ssh/shared/config,readonly",
+    "type=bind,source=${localWorkspaceFolder}/../.aws,target=/home/dev/.aws",
     "type=volume,source=dind-runtime,target=/var/run/dind"
   ],
   "runArgs": [
