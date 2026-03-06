@@ -16,15 +16,20 @@ RUN apt-get install -y --no-install-recommends \
       sudo iptables iproute2 iputils-ping net-tools ppp ca-certificates
 
 RUN apt-get install -y curl
+RUN apt-get install -y git ripgrep
 
-RUN apt-get install -y git && \
-    rm -rf /var/lib/apt/lists/*
+RUN rm -rf /var/lib/apt/lists/*
 
 COPY --from=dockercli /usr/local/bin/docker /usr/local/bin/docker
 
 # --- Non-root user ---
 ARG USER=dev
 RUN useradd -m ${USER}
+
+# --- Install JDK 17
+COPY scripts/install-temurin.sh /usr/local/bin/install-temurin.sh
+RUN chmod +x /usr/local/bin/install-temurin.sh
+RUN install-temurin.sh 17
 
 # --- Install jenv ---
 ENV JENV_ROOT=/home/${USER}/.jenv
@@ -39,10 +44,10 @@ RUN git clone https://github.com/jenv/jenv.git "${JENV_ROOT}" && \
       > /etc/profile.d/jenv.sh
 
 # --- Install Codex
-COPY scripts/download-codex.sh /usr/local/bin/scripts/download-codex.sh
-RUN chmod +x /usr/local/bin/scripts/download-codex.sh
+COPY scripts/download-codex.sh /usr/local/bin/download-codex.sh
+RUN chmod +x /usr/local/bin/download-codex.sh
 RUN mkdir -p /opt/codex; \
-    /usr/local/bin/scripts/download-codex.sh; \
+    /usr/local/bin/download-codex.sh; \
     ln -sf /opt/codex/codex-x86_64-unknown-linux-gnu /usr/local/bin/codex
 
 # create ssh config folder
@@ -63,9 +68,6 @@ RUN chmod +x /usr/local/bin/entrypoint.sh
 
 COPY scripts/setup-ssh.sh /usr/local/bin/setup-ssh.sh
 RUN chmod +x /usr/local/bin/setup-ssh.sh
-
-COPY scripts/install-temurin.sh /usr/local/bin/install-temurin.sh
-RUN chmod +x /usr/local/bin/install-temurin.sh
 
 # USER ${USER}
 WORKDIR /home/${USER}
