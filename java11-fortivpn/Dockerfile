@@ -25,7 +25,7 @@ COPY --from=dockercli /usr/local/bin/docker /usr/local/bin/docker
 
 # --- Non-root user ---
 ARG USER=dev
-RUN useradd -m ${USER}
+RUN useradd -m -s /usr/bin/zsh ${USER}
 
 # --- Install Oh My Zsh ---
 RUN git clone --depth=1 https://github.com/ohmyzsh/ohmyzsh.git /home/${USER}/.oh-my-zsh && \
