@@ -39,6 +39,7 @@ shift
 
 version=""
 install_root="/opt/temurin"
+jvm_root="/usr/lib/jvm"
 arch=""
 
 while [[ $# -gt 0 ]]; do
@@ -152,9 +153,9 @@ else
   SUDO=""
 fi
 
-$SUDO mkdir -p "$install_root"
+$SUDO mkdir -p "$install_root" "$jvm_root"
 $SUDO tar -xzf "$tarball" -C "$install_root"
-$SUDO ln -sfn "$dest_dir" "${install_root}/jdk-${major}"
+$SUDO ln -sfn "$dest_dir" "${jvm_root}/temurin-jdk-${major}"
 
 echo "Installed JDK ${major} to $dest_dir"
-echo "Symlinked ${install_root}/jdk-${major} -> $dest_dir"
+echo "Symlinked ${jvm_root}/temurin-jdk-${major} -> $dest_dir"
