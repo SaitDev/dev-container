@@ -20,7 +20,7 @@
   "remoteEnv": {
     "DOCKER_HOST": "unix:///var/run/dind/docker.sock"
   },
-  "overrideCommand": false,
+  "overrideCommand": true,
   "postStartCommand": "/usr/local/bin/setup-ssh.sh",
   "customizations": {
     "jetbrains": {

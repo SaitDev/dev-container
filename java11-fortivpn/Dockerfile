@@ -17,7 +17,7 @@ RUN apt-get install -y --no-install-recommends \
 
 RUN apt-get install -y curl
 RUN apt-get install -y git ripgrep
-RUN apt-get install -y zsh
+RUN apt-get install -y zsh screen
 
 RUN rm -rf /var/lib/apt/lists/*
 
@@ -29,7 +29,9 @@ RUN useradd -m -s /usr/bin/zsh ${USER}
 
 # --- Install Oh My Zsh ---
 RUN git clone --depth=1 https://github.com/ohmyzsh/ohmyzsh.git /home/${USER}/.oh-my-zsh && \
+    git clone --depth=1 https://github.com/zsh-users/zsh-autosuggestions.git /home/${USER}/.oh-my-zsh/custom/plugins/zsh-autosuggestions && \
     cp /home/${USER}/.oh-my-zsh/templates/zshrc.zsh-template /home/${USER}/.zshrc && \
+    sed -i 's/^plugins=(git)$/plugins=(git zsh-autosuggestions)/' /home/${USER}/.zshrc && \
     chown -R ${USER}:${USER} /home/${USER}/.oh-my-zsh /home/${USER}/.zshrc
 
 # --- Install JDK 17
@@ -77,4 +79,4 @@ RUN chmod +x /usr/local/bin/setup-ssh.sh
 
 # USER ${USER}
 WORKDIR /home/${USER}
-ENTRYPOINT ["/usr/local/bin/entrypoint.sh"]
+# ENTRYPOINT ["/usr/local/bin/entrypoint.sh"]
