@@ -1,0 +1,95 @@
+FROM eclipse-temurin:11.0.31_11-jdk-noble
+# ubuntu 24, no slim version but good enough ~182MB, alpine is only 30MB smaller
+
+ENV TZ="Asia/Ho_Chi_Minh"
+
+RUN apt-get update && \
+    DEBIAN_FRONTEND=noninteractive apt-get install -y --no-install-recommends \
+      ca-certificates \
+      curl \
+      git \
+      iproute2 \
+      iptables \
+      iputils-ping \
+      net-tools \
+      openvpn \
+      openssh-server \
+      ripgrep \
+      sudo \
+      unzip \
+      zsh && \
+    rm -rf /var/lib/apt/lists/*
+
+# --- Non-root user ---
+ARG USER=dev
+RUN useradd -m -s /usr/bin/zsh ${USER}
+
+# --- SSH server ---
+RUN mkdir -p /var/run/sshd && \
+    sed -i 's/^#\?PermitRootLogin .*/PermitRootLogin no/' /etc/ssh/sshd_config && \
+    sed -i 's/^#\?PasswordAuthentication .*/PasswordAuthentication no/' /etc/ssh/sshd_config && \
+    sed -i 's/^#\?PubkeyAuthentication .*/PubkeyAuthentication yes/' /etc/ssh/sshd_config
+
+# --- Install Oh My Zsh ---
+RUN git clone --depth=1 https://github.com/ohmyzsh/ohmyzsh.git /home/${USER}/.oh-my-zsh && \
+    git clone --depth=1 https://github.com/zsh-users/zsh-autosuggestions.git /home/${USER}/.oh-my-zsh/custom/plugins/zsh-autosuggestions && \
+    cp /home/${USER}/.oh-my-zsh/templates/zshrc.zsh-template /home/${USER}/.zshrc && \
+    sed -i 's/^plugins=(git)$/plugins=(git zsh-autosuggestions)/' /home/${USER}/.zshrc && \
+    chown -R ${USER}:${USER} /home/${USER}/.oh-my-zsh /home/${USER}/.zshrc
+
+# --- Install JDK helper and jenv ---
+COPY scripts/install-temurin.sh /usr/local/bin/install-temurin.sh
+RUN chmod +x /usr/local/bin/install-temurin.sh
+
+ENV JENV_ROOT=/home/${USER}/.jenv
+RUN git clone https://github.com/jenv/jenv.git "${JENV_ROOT}" && \
+    chown -R ${USER}:${USER} "${JENV_ROOT}" && \
+    printf '%s\n' \
+      "export JENV_ROOT=${JENV_ROOT}" \
+      'export PATH="$JENV_ROOT/bin:$PATH"' \
+      'if command -v jenv >/dev/null 2>&1; then' \
+      '  eval "$(jenv init -)"' \
+      'fi' \
+      > /etc/profile.d/jenv.sh
+
+# --- Install fnm and Node ---
+ARG NODE_VERSION=24
+ENV FNM_DIR=/home/${USER}/.local/share/fnm
+ENV PATH="${FNM_DIR}:${PATH}"
+RUN mkdir -p "${FNM_DIR}" && \
+    chown -R ${USER}:${USER} /home/${USER}/.local && \
+    su ${USER} -c 'curl -fsSL https://fnm.vercel.app/install | bash -s -- --skip-shell' && \
+    su ${USER} -c "${FNM_DIR}/fnm install ${NODE_VERSION}" && \
+    su ${USER} -c "${FNM_DIR}/fnm default ${NODE_VERSION}" && \
+    printf '%s\n' \
+      "export FNM_DIR=${FNM_DIR}" \
+      'export PATH="$FNM_DIR:$PATH"' \
+      'if command -v fnm >/dev/null 2>&1; then' \
+      '  eval "$(fnm env --use-on-cd --shell zsh)"' \
+      'fi' \
+      > /etc/profile.d/fnm.sh && \
+    cat /etc/profile.d/fnm.sh >> /home/${USER}/.zshrc && \
+    chown ${USER}:${USER} /home/${USER}/.zshrc
+
+# --- Install Codex ---
+COPY scripts/download-codex.sh /usr/local/bin/download-codex.sh
+RUN chmod +x /usr/local/bin/download-codex.sh
+RUN mkdir -p /opt/codex; \
+    /usr/local/bin/download-codex.sh; \
+    ln -sf /opt/codex/codex-x86_64-unknown-linux-gnu /usr/local/bin/codex
+
+RUN echo "${USER} ALL=(ALL) NOPASSWD: /usr/local/bin/ovpn, /usr/sbin/openvpn" > /etc/sudoers.d/${USER}-openvpn && \
+    chmod 440 /etc/sudoers.d/${USER}-openvpn
+
+COPY scripts/setup-ssh.sh /usr/local/bin/setup-ssh.sh
+RUN chmod +x /usr/local/bin/setup-ssh.sh
+
+COPY scripts/openvpn-client.sh /usr/local/bin/ovpn
+RUN chmod +x /usr/local/bin/ovpn
+
+COPY scripts/entrypoint-sshd.sh /usr/local/bin/entrypoint.sh
+RUN chmod +x /usr/local/bin/entrypoint.sh
+
+WORKDIR /home/${USER}
+EXPOSE 22
+ENTRYPOINT ["/usr/local/bin/entrypoint.sh"]
