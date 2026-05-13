@@ -39,15 +39,14 @@ services:
         bind:
           create_host_path: false
       - type: bind
-        source: ${WORKSPACE_RESOURCE:-.}/ssh/known_hosts
-        target: /home/dev/.ssh/shared/known_hosts
+        source: ${WORKSPACE_RESOURCE:-.}/ssh/authorized_keys
+        target: /home/dev/.ssh/shared/authorized_keys
         read_only: true
         bind:
           create_host_path: false
       - type: bind
-        source: ${WORKSPACE_RESOURCE:-.}/ssh/authorized_keys
-        target: /home/dev/.ssh/shared/authorized_keys
-        read_only: true
+        source: ${WORKSPACE_RESOURCE:-.}/aws
+        target: /home/dev/.aws
         bind:
           create_host_path: false
     networks:
