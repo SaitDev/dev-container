@@ -21,31 +21,31 @@ services:
       - premio-gradle:/home/dev/.gradle
       - dind-runtime:/var/run/dind
       - type: bind
-        source: ./openvpn
+        source: ${WORKSPACE_RESOURCE:-.}/openvpn
         target: /etc/openvpn/client
         read_only: true
         bind:
           create_host_path: false
       - type: bind
-        source: ./ssh/keys
+        source: ${WORKSPACE_RESOURCE:-.}/ssh/keys
         target: /home/dev/.ssh/shared/keys
         read_only: true
         bind:
           create_host_path: false
       - type: bind
-        source: ./ssh/config
+        source: ${WORKSPACE_RESOURCE:-.}/ssh/config
         target: /home/dev/.ssh/shared/config
         read_only: true
         bind:
           create_host_path: false
       - type: bind
-        source: ./ssh/known_hosts
+        source: ${WORKSPACE_RESOURCE:-.}/ssh/known_hosts
         target: /home/dev/.ssh/shared/known_hosts
         read_only: true
         bind:
           create_host_path: false
       - type: bind
-        source: ./ssh/authorized_keys
+        source: ${WORKSPACE_RESOURCE:-.}/ssh/authorized_keys
         target: /home/dev/.ssh/shared/authorized_keys
         read_only: true
         bind:
