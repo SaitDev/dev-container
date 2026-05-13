@@ -14,7 +14,7 @@ services:
     volumes:
       - type: bind
         source: ${WORKSPACE_SOURCE:-.}
-        target: /workspace/premio
+        target: /workspace/premio-java
         bind:
           create_host_path: true
       - premio-maven:/home/dev/.m2
