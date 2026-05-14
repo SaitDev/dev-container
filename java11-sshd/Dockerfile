@@ -37,6 +37,42 @@ RUN git clone --depth=1 https://github.com/ohmyzsh/ohmyzsh.git /home/${USER}/.oh
     sed -i 's/^plugins=(git)$/plugins=(git zsh-autosuggestions)/' /home/${USER}/.zshrc && \
     chown -R ${USER}:${USER} /home/${USER}/.oh-my-zsh /home/${USER}/.zshrc
 
+# --- Java env for dev shell sessions ---
+RUN printf '%s\n' \
+      'export JAVA_HOME=/opt/java/openjdk' \
+      'case ":$PATH:" in' \
+      '  *":$JAVA_HOME/bin:"*) ;;' \
+      '  *) export PATH="$JAVA_HOME/bin:$PATH" ;;' \
+      'esac' \
+      > /home/${USER}/.java-env && \
+    touch /home/${USER}/.bashrc /home/${USER}/.bash_profile /home/${USER}/.profile /home/${USER}/.zprofile && \
+    printf '%s\n' \
+      '' \
+      '# Load Java for dev shell sessions' \
+      '[ -f "$HOME/.java-env" ] && . "$HOME/.java-env"' \
+      >> /home/${USER}/.zshrc && \
+    printf '%s\n' \
+      '' \
+      '# Load Java for dev shell sessions' \
+      '[ -f "$HOME/.java-env" ] && . "$HOME/.java-env"' \
+      >> /home/${USER}/.zprofile && \
+    printf '%s\n' \
+      '' \
+      '# Load Java for dev shell sessions' \
+      '[ -f "$HOME/.java-env" ] && . "$HOME/.java-env"' \
+      >> /home/${USER}/.bashrc && \
+    printf '%s\n' \
+      '' \
+      '# Load Java for dev shell sessions' \
+      '[ -f "$HOME/.java-env" ] && . "$HOME/.java-env"' \
+      >> /home/${USER}/.bash_profile && \
+    printf '%s\n' \
+      '' \
+      '# Load Java for dev shell sessions' \
+      '[ -f "$HOME/.java-env" ] && . "$HOME/.java-env"' \
+      >> /home/${USER}/.profile && \
+    chown ${USER}:${USER} /home/${USER}/.java-env /home/${USER}/.zshrc /home/${USER}/.zprofile /home/${USER}/.bashrc /home/${USER}/.bash_profile /home/${USER}/.profile
+
 # --- Install JDK helper and jenv ---
 COPY scripts/install-temurin.sh /usr/local/bin/install-temurin.sh
 RUN chmod +x /usr/local/bin/install-temurin.sh
@@ -50,7 +86,9 @@ RUN git clone https://github.com/jenv/jenv.git "${JENV_ROOT}" && \
       'if command -v jenv >/dev/null 2>&1; then' \
       '  eval "$(jenv init -)"' \
       'fi' \
-      > /etc/profile.d/jenv.sh
+      > /etc/profile.d/jenv.sh && \
+    cat /etc/profile.d/jenv.sh >> /home/${USER}/.zshrc && \
+    cat /etc/profile.d/jenv.sh >> /home/${USER}/.zprofile
 
 # --- Install fnm and Node ---
 ARG NODE_VERSION=24
@@ -69,14 +107,14 @@ RUN mkdir -p "${FNM_DIR}" && \
       'fi' \
       > /etc/profile.d/fnm.sh && \
     cat /etc/profile.d/fnm.sh >> /home/${USER}/.zshrc && \
-    chown ${USER}:${USER} /home/${USER}/.zshrc
+    cat /etc/profile.d/fnm.sh >> /home/${USER}/.zprofile
 
 # --- Install Codex ---
 COPY scripts/download-codex.sh /usr/local/bin/download-codex.sh
 RUN chmod +x /usr/local/bin/download-codex.sh
 RUN mkdir -p /opt/codex; \
     /usr/local/bin/download-codex.sh; \
-    ln -sf /opt/codex/codex-x86_64-unknown-linux-gnu /usr/local/bin/codex
+    ln -sf /opt/codex/codex-x86_64-unknown-linux-musl /usr/local/bin/codex
 
 RUN echo "${USER} ALL=(ALL) NOPASSWD: /usr/local/bin/ovpn, /usr/sbin/openvpn" > /etc/sudoers.d/${USER}-openvpn && \
     chmod 440 /etc/sudoers.d/${USER}-openvpn
