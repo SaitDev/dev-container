@@ -1,0 +1,1 @@
+cd .. && docker build -f java21-sshd/Dockerfile -t java21-sshd .

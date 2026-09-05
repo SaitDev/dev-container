@@ -1,0 +1,51 @@
+services:
+  tmvn-java21:
+    build:
+      context: ..
+      dockerfile: java21-sshd/Dockerfile
+    image: java21-sshd:latest
+    container_name: ${PROJECT}-java21
+#    restart: unless-stopped
+    environment:
+      SSH_USER: dev
+      DOCKER_HOST: unix:///var/run/dind/docker.sock
+    networks:
+      - dev-dind
+    ports:
+      - "2233:22"
+    volumes:
+      - maven:/home/dev/.m2
+      - gradle:/home/dev/.gradle
+      - dind-runtime:/var/run/dind
+      - type: bind
+        source: ${WORKSPACE_RESOURCE:-.}/ssh/authorized_keys
+        target: /home/dev/.ssh/shared/authorized_keys
+        read_only: true
+        bind:
+          create_host_path: false
+      - type: bind
+        source: "${WORKSPACE1_SOURCE_FOLDER:-.}"
+        target: "/workspace/WORKSPACE1_TARGET_FOLDER"
+        bind:
+          create_host_path: false
+      - type: bind
+        source: "${WORKSPACE2_SOURCE_FOLDER:-.}"
+        target: "/workspace/WORKSPACE2_TARGET_FOLDER"
+        bind:
+          create_host_path: false
+      - ./workspace/codex:/home/dev/.codex
+      - ./workspace/jetbrains-config:/home/dev/.config/JetBrains
+      - ./workspace/jetbrains-cache:/home/dev/.cache/JetBrains
+      - ./workspace/jetbrains-share:/home/dev/.local/share/JetBrains
+
+volumes:
+  maven:
+    name: "${PROJECT}-maven"
+  gradle:
+    name: "${PROJECT}-gradle"
+  dind-runtime:
+    external: true
+
+networks:
+  dev-dind:
+    external: true
