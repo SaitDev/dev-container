@@ -30,6 +30,7 @@ RUN mkdir -p /var/run/sshd && \
     sed -i 's/^#\?PubkeyAuthentication .*/PubkeyAuthentication yes/' /etc/ssh/sshd_config
 
 ARG WORKSPACE=/workspace
+RUN mkdir -p ${WORKSPACE}
 
 # --- Open Telemetry agent ---
 ARG TELEMETRY_AGENT="${WORKSPACE}/opentelemetry-javaagent-2.6.0.jar"
