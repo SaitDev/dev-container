@@ -29,16 +29,6 @@ RUN mkdir -p /var/run/sshd && \
     sed -i 's/^#\?PasswordAuthentication .*/PasswordAuthentication no/' /etc/ssh/sshd_config && \
     sed -i 's/^#\?PubkeyAuthentication .*/PubkeyAuthentication yes/' /etc/ssh/sshd_config
 
-ARG WORKSPACE=/workspace
-RUN mkdir -p ${WORKSPACE}
-RUN chmod 777 ${WORKSPACE}
-
-# --- Open Telemetry agent ---
-ARG TELEMETRY_AGENT="${WORKSPACE}/opentelemetry-javaagent-2.6.0.jar"
-RUN wget "https://github.com/open-telemetry/opentelemetry-java-instrumentation/releases/download/v2.6.0/opentelemetry-javaagent.jar" \
-    -O ${TELEMETRY_AGENT}
-RUN chmod +x ${TELEMETRY_AGENT}
-
 # --- Install Oh My Zsh ---
 RUN git clone --depth=1 https://github.com/ohmyzsh/ohmyzsh.git /home/${USER}/.oh-my-zsh && \
     git clone --depth=1 https://github.com/zsh-users/zsh-autosuggestions.git /home/${USER}/.oh-my-zsh/custom/plugins/zsh-autosuggestions && \

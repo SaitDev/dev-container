@@ -23,6 +23,7 @@ services:
         read_only: true
         bind:
           create_host_path: false
+      - "${WORKSPACE_RESOURCE:-.}/intellij-workspace:/workspace"
       - type: bind
         source: "${WORKSPACE1_SOURCE_FOLDER:-.}"
         target: "/workspace/${WORKSPACE1_TARGET_FOLDER}"
