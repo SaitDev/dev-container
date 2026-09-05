@@ -33,10 +33,10 @@ services:
         target: "/workspace/WORKSPACE2_TARGET_FOLDER"
         bind:
           create_host_path: false
-      - ./workspace/codex:/home/dev/.codex
-      - ./workspace/jetbrains-config:/home/dev/.config/JetBrains
-      - ./workspace/jetbrains-cache:/home/dev/.cache/JetBrains
-      - ./workspace/jetbrains-share:/home/dev/.local/share/JetBrains
+      - "${WORKSPACE_RESOURCE:-.}/codex:/home/dev/.codex"
+      - "${WORKSPACE_RESOURCE:-.}/jetbrains-config:/home/dev/.config/JetBrains"
+      - "${WORKSPACE_RESOURCE:-.}/jetbrains-cache:/home/dev/.cache/JetBrains"
+      - "${WORKSPACE_RESOURCE:-.}/jetbrains-share:/home/dev/.local/share/JetBrains"
 
 volumes:
   maven:
