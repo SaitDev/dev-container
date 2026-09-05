@@ -122,7 +122,7 @@ COPY scripts/download-codex.sh /usr/local/bin/download-codex.sh
 RUN chmod +x /usr/local/bin/download-codex.sh
 RUN mkdir -p /opt/codex; \
     /usr/local/bin/download-codex.sh; \
-    ln -sf /opt/codex/codex-x86_64-unknown-linux-musl /usr/local/bin/codex
+    ln -sf /opt/codex/bin/codex /usr/local/bin/codex
 
 COPY scripts/setup-ssh.sh /usr/local/bin/setup-ssh.sh
 RUN chmod +x /usr/local/bin/setup-ssh.sh

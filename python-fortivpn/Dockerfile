@@ -25,7 +25,7 @@ RUN chmod +x /usr/local/bin/scripts/download-codex.sh
 
 RUN mkdir -p /opt/codex; \
     /usr/local/bin/scripts/download-codex.sh; \
-    ln -sf /opt/codex/codex-x86_64-unknown-linux-gnu /usr/local/bin/codex
+    ln -sf /opt/codex/bin/codex /usr/local/bin/codex
 
 # --- Non-root user ---
 ARG USER=dev
@@ -49,5 +49,4 @@ RUN chmod +x /usr/local/bin/entrypoint.sh
 # USER ${USER}
 WORKDIR /home/${USER}
 ENTRYPOINT ["/usr/local/bin/entrypoint.sh"]
-
 

@@ -114,7 +114,7 @@ COPY scripts/download-codex.sh /usr/local/bin/download-codex.sh
 RUN chmod +x /usr/local/bin/download-codex.sh
 RUN mkdir -p /opt/codex; \
     /usr/local/bin/download-codex.sh; \
-    ln -sf /opt/codex/codex-x86_64-unknown-linux-musl /usr/local/bin/codex
+    ln -sf /opt/codex/bin/codex /usr/local/bin/codex
 
 RUN echo "${USER} ALL=(ALL) NOPASSWD: /usr/local/bin/ovpn, /usr/sbin/openvpn" > /etc/sudoers.d/${USER}-openvpn && \
     chmod 440 /etc/sudoers.d/${USER}-openvpn

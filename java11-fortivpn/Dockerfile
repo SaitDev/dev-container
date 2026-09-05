@@ -56,7 +56,7 @@ COPY scripts/download-codex.sh /usr/local/bin/download-codex.sh
 RUN chmod +x /usr/local/bin/download-codex.sh
 RUN mkdir -p /opt/codex; \
     /usr/local/bin/download-codex.sh; \
-    ln -sf /opt/codex/codex-x86_64-unknown-linux-gnu /usr/local/bin/codex
+    ln -sf /opt/codex/bin/codex /usr/local/bin/codex
 
 # create ssh config folder
 RUN mkdir -p /home/${USER}/.ssh && \

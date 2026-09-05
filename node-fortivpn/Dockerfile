@@ -47,7 +47,7 @@ RUN chmod +x /usr/local/bin/scripts/download-codex.sh
 
 RUN mkdir -p /opt/codex; \
     /usr/local/bin/scripts/download-codex.sh; \
-    ln -sf /opt/codex/codex-x86_64-unknown-linux-gnu /usr/local/bin/codex
+    ln -sf /opt/codex/bin/codex /usr/local/bin/codex
 
 # --- Copy entrypoint & make it executable ---
 # COPY --chown=${USER}:${USER} entrypoint.sh /usr/local/bin/entrypoint.sh
