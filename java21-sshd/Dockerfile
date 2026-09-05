@@ -29,6 +29,8 @@ RUN mkdir -p /var/run/sshd && \
     sed -i 's/^#\?PasswordAuthentication .*/PasswordAuthentication no/' /etc/ssh/sshd_config && \
     sed -i 's/^#\?PubkeyAuthentication .*/PubkeyAuthentication yes/' /etc/ssh/sshd_config
 
+ARG WORKSPACE=/workspace
+
 # --- Open Telemetry agent ---
 ARG TELEMETRY_AGENT="${WORKSPACE}/opentelemetry-javaagent-2.6.0.jar"
 RUN wget "https://github.com/open-telemetry/opentelemetry-java-instrumentation/releases/download/v2.6.0/opentelemetry-javaagent.jar" \
