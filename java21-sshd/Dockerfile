@@ -31,6 +31,7 @@ RUN mkdir -p /var/run/sshd && \
 
 ARG WORKSPACE=/workspace
 RUN mkdir -p ${WORKSPACE}
+RUN chmod 777 ${WORKSPACE}
 
 # --- Open Telemetry agent ---
 ARG TELEMETRY_AGENT="${WORKSPACE}/opentelemetry-javaagent-2.6.0.jar"
