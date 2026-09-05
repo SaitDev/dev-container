@@ -37,6 +37,7 @@ RUN chmod 777 ${WORKSPACE}
 ARG TELEMETRY_AGENT="${WORKSPACE}/opentelemetry-javaagent-2.6.0.jar"
 RUN wget "https://github.com/open-telemetry/opentelemetry-java-instrumentation/releases/download/v2.6.0/opentelemetry-javaagent.jar" \
     -O ${TELEMETRY_AGENT}
+RUN chmod +x ${TELEMETRY_AGENT}
 
 # --- Install Oh My Zsh ---
 RUN git clone --depth=1 https://github.com/ohmyzsh/ohmyzsh.git /home/${USER}/.oh-my-zsh && \
