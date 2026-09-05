@@ -9,14 +9,19 @@ services:
     environment:
       SSH_USER: dev
       DOCKER_HOST: unix:///var/run/dind/docker.sock
+      VSCODE_CLI_USE_FILE_KEYCHAIN: "1"
+      VSCODE_CLI_DATA_DIR: /home/dev/.vscode
     networks:
       - dev-dind
     ports:
       - "2233:22"
+      - "25577:25577"
+      - "25565:25565"
     volumes:
       - maven:/home/dev/.m2
       - gradle:/home/dev/.gradle
       - dind-runtime:/var/run/dind
+      - vscode:/home/dev/.vscode
       - type: bind
         source: ${WORKSPACE_RESOURCE:-.}/ssh/authorized_keys
         target: /home/dev/.ssh/shared/authorized_keys
@@ -44,6 +49,8 @@ volumes:
     name: "${PROJECT}-maven"
   gradle:
     name: "${PROJECT}-gradle"
+  vscode:
+    name: "${PROJECT}-vscode"
   dind-runtime:
     external: true
 

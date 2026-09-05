@@ -3,6 +3,7 @@ FROM eclipse-temurin:21.0.12_8-jdk-noble
 
 ENV TZ="Asia/Ho_Chi_Minh"
 
+# libicu74: if vscode extension use .net, .net need libicu
 RUN apt-get update && \
     DEBIAN_FRONTEND=noninteractive apt-get install -y --no-install-recommends \
         ca-certificates \
@@ -13,6 +14,7 @@ RUN apt-get update && \
         sudo \
         unzip \
         zsh \
+        libicu74 \
         bubblewrap \
         nano \
         screen \
@@ -108,6 +110,13 @@ RUN mkdir -p "${FNM_DIR}" && \
     cat /etc/profile.d/fnm.sh >> /home/${USER}/.zshrc && \
     cat /etc/profile.d/fnm.sh >> /home/${USER}/.zprofile
 
+# --- Install VS Code CLI ---
+COPY scripts/download-vscode-cli.sh /usr/local/bin/download-vscode-cli.sh
+COPY scripts/setup-vscode-cli.sh /usr/local/bin/setup-vscode-cli.sh
+RUN chmod +x /usr/local/bin/download-vscode-cli.sh /usr/local/bin/setup-vscode-cli.sh && \
+    TARGET_USER=${USER} /usr/local/bin/download-vscode-cli.sh && \
+    TARGET_USER=${USER} /usr/local/bin/setup-vscode-cli.sh
+
 # --- Install Codex ---
 COPY scripts/download-codex.sh /usr/local/bin/download-codex.sh
 RUN chmod +x /usr/local/bin/download-codex.sh
@@ -122,6 +131,5 @@ COPY scripts/entrypoint-sshd.sh /usr/local/bin/entrypoint.sh
 RUN chmod +x /usr/local/bin/entrypoint.sh
 
 WORKDIR /home/${USER}
-EXPOSE 22
+EXPOSE 22 25577 25565
 ENTRYPOINT ["/usr/local/bin/entrypoint.sh"]
-
