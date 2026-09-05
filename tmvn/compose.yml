@@ -25,12 +25,12 @@ services:
           create_host_path: false
       - type: bind
         source: "${WORKSPACE1_SOURCE_FOLDER:-.}"
-        target: "/workspace/WORKSPACE1_TARGET_FOLDER"
+        target: "/workspace/${WORKSPACE1_TARGET_FOLDER}"
         bind:
           create_host_path: false
       - type: bind
         source: "${WORKSPACE2_SOURCE_FOLDER:-.}"
-        target: "/workspace/WORKSPACE2_TARGET_FOLDER"
+        target: "/workspace/${WORKSPACE2_TARGET_FOLDER}"
         bind:
           create_host_path: false
       - "${WORKSPACE_RESOURCE:-.}/codex:/home/dev/.codex"
