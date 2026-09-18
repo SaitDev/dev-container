@@ -4,6 +4,7 @@ FROM eclipse-temurin:21.0.12_8-jdk-noble
 ENV TZ="Asia/Ho_Chi_Minh"
 
 # libicu74: if vscode extension use .net, .net need libicu
+#TODO remove bubblewrap?
 RUN apt-get update && \
     DEBIAN_FRONTEND=noninteractive apt-get install -y --no-install-recommends \
         ca-certificates \
@@ -24,6 +25,7 @@ RUN apt-get update && \
 # --- Non-root user ---
 ARG USER=dev
 RUN useradd -m -s /usr/bin/zsh ${USER}
+ENV PATH="/home/${USER}/.local/bin:${PATH}"
 
 # --- SSH server ---
 RUN mkdir -p /var/run/sshd && \
@@ -118,11 +120,10 @@ RUN chmod +x /usr/local/bin/download-vscode-cli.sh /usr/local/bin/setup-vscode-c
     TARGET_USER=${USER} /usr/local/bin/setup-vscode-cli.sh
 
 # --- Install Codex ---
+ARG CODEX_VERSION=latest
 COPY scripts/download-codex.sh /usr/local/bin/download-codex.sh
 RUN chmod +x /usr/local/bin/download-codex.sh
-RUN mkdir -p /opt/codex; \
-    /usr/local/bin/download-codex.sh; \
-    ln -sf /opt/codex/bin/codex /usr/local/bin/codex
+RUN su ${USER} -c "CODEX_RELEASE=${CODEX_VERSION} /usr/local/bin/download-codex.sh"
 
 COPY scripts/setup-ssh.sh /usr/local/bin/setup-ssh.sh
 RUN chmod +x /usr/local/bin/setup-ssh.sh

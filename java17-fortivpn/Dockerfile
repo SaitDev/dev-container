@@ -18,17 +18,16 @@ RUN apt-get install -y curl
 RUN apt-get install -y git && \
     rm -rf /var/lib/apt/lists/*
 
-RUN mkdir -p /opt/codex; \
-    curl -fL -o /tmp/codex.tar.gz "https://github.com/openai/codex/releases/latest/download/codex-x86_64-unknown-linux-gnu.tar.gz"; \
-    ls -la /tmp; \
-    tar -xzvf /tmp/codex.tar.gz -C /opt/codex; \
-    ls -la /opt/codex; \
-    rm -f /tmp/codex.tar.gz; \
-    ln -sf /opt/codex/codex-x86_64-unknown-linux-gnu /usr/local/bin/codex
-
 # --- Non-root user ---
 ARG USER=dev
 RUN useradd -m ${USER}
+ENV PATH="/home/${USER}/.local/bin:${PATH}"
+
+# --- Install Codex ---
+ARG CODEX_VERSION=latest
+COPY scripts/download-codex.sh /usr/local/bin/download-codex.sh
+RUN chmod +x /usr/local/bin/download-codex.sh
+RUN su ${USER} -c "CODEX_RELEASE=${CODEX_VERSION} /usr/local/bin/download-codex.sh"
 
 # create ssh config folder
 RUN mkdir -p /home/${USER}/.ssh && \
@@ -48,5 +47,4 @@ RUN chmod +x /usr/local/bin/entrypoint.sh
 # USER ${USER}
 WORKDIR /home/${USER}
 ENTRYPOINT ["/usr/local/bin/entrypoint.sh"]
-
 

@@ -1,82 +1,68 @@
 #!/usr/bin/env bash
 set -euo pipefail
 
-CODEX_TARGET="${CODEX_TARGET:-x86_64-unknown-linux-musl}"
-CODEX_DIR="${CODEX_DIR:-/opt/codex}"
-CODEX_VERSION="${CODEX_VERSION:-latest}"
+INSTALL_SCRIPT_URL="${CODEX_INSTALL_SCRIPT_URL:-https://chatgpt.com/codex/install.sh}"
+CODEX_RELEASE="${CODEX_RELEASE:-${CODEX_VERSION:-latest}}"
+CODEX_INSTALL_DIR="${CODEX_INSTALL_DIR:-$HOME/.local/bin}"
+CODEX_STANDALONE_HOME="${CODEX_STANDALONE_HOME:-${CODEX_HOME:-$HOME/.local/share/codex-standalone}}"
+CODEX_NON_INTERACTIVE="${CODEX_NON_INTERACTIVE:-1}"
 
-if [ "$CODEX_VERSION" = "latest" ]; then
-  CODEX_BASE_URL="https://github.com/openai/codex/releases/latest/download"
-else
-  CODEX_VERSION="${CODEX_VERSION#rust-v}"
-  CODEX_VERSION="${CODEX_VERSION#v}"
-  CODEX_BASE_URL="https://github.com/openai/codex/releases/download/rust-v${CODEX_VERSION}"
-fi
+usage() {
+  cat <<EOF
+Usage: $(basename "$0") [VERSION]
+       $(basename "$0") --release VERSION
 
-download() {
-  curl -fL -o "$2" "$1"
+Installs Codex CLI using the official installer:
+  $INSTALL_SCRIPT_URL
+
+Environment:
+  CODEX_RELEASE                         Version to install. Default: latest.
+  CODEX_VERSION                         Backward-compatible alias for CODEX_RELEASE.
+  CODEX_INSTALL_DIR                     Directory for visible codex command. Default: \$HOME/.local/bin.
+  CODEX_STANDALONE_HOME                 Package root used by the official installer.
+                                        Default: \$HOME/.local/share/codex-standalone.
+  CODEX_HOME                            Backward-compatible alias for CODEX_STANDALONE_HOME.
+  CODEX_INSTALLER_USE_RELEASES_OPENAI_COM
+                                        Set to false/0/no to force GitHub Releases.
+  CODEX_NON_INTERACTIVE                 Default: 1.
+  CODEX_ALLOW_ROOT_INSTALL              Set to 1 to allow installing as root.
+EOF
 }
 
-staging_dir="$(mktemp -d)"
-archive="/tmp/codex.tar.gz"
-host_archive="/tmp/codex-code-mode-host.tar.gz"
+while [ "$#" -gt 0 ]; do
+  case "$1" in
+    --release)
+      [ "$#" -ge 2 ] || { echo "--release requires a value." >&2; exit 1; }
+      CODEX_RELEASE="$2"
+      shift
+      ;;
+    --help | -h)
+      usage
+      exit 0
+      ;;
+    -*)
+      echo "Unknown argument: $1" >&2
+      usage >&2
+      exit 1
+      ;;
+    *)
+      CODEX_RELEASE="$1"
+      ;;
+  esac
+  shift
+done
 
-cleanup() {
-  rm -rf "$staging_dir" "$archive" "$host_archive"
-}
-trap cleanup EXIT
-
-package_url="${CODEX_BASE_URL}/codex-package-${CODEX_TARGET}.tar.gz"
-legacy_url="${CODEX_BASE_URL}/codex-${CODEX_TARGET}.tar.gz"
-host_url="${CODEX_BASE_URL}/codex-code-mode-host-${CODEX_TARGET}.tar.gz"
-
-if download "$package_url" "$archive"; then
-  tar -xzf "$archive" -C "$staging_dir"
-elif download "$legacy_url" "$archive"; then
-  tar -xzf "$archive" -C "$staging_dir"
-  if download "$host_url" "$host_archive"; then
-    tar -xzf "$host_archive" -C "$staging_dir"
-  else
-    echo "Warning: codex-code-mode-host asset was not found for ${CODEX_TARGET}." >&2
-  fi
-else
-  echo "Failed to download Codex for target ${CODEX_TARGET} from ${CODEX_BASE_URL}" >&2
+if [ "$(id -u)" = "0" ] && [ "${CODEX_ALLOW_ROOT_INSTALL:-0}" != "1" ]; then
+  echo "Refusing to install Codex as root." >&2
+  echo "Run this as the target user, for example: su dev -c '/usr/local/bin/download-codex.sh ${CODEX_RELEASE}'" >&2
   exit 1
 fi
 
-# Some package archives unpack as <temp>/codex-*/bin/codex instead of
-# <temp>/bin/codex. Flatten that layout so the install path is stable.
-if [ ! -x "$staging_dir/bin/codex" ]; then
-  for candidate in "$staging_dir"/*/bin/codex; do
-    [ -x "$candidate" ] || continue
-    package_root="$(dirname "$(dirname "$candidate")")"
-    flat_dir="$(mktemp -d)"
-    cp -a "$package_root/." "$flat_dir/"
-    rm -rf "$staging_dir"
-    staging_dir="$flat_dir"
-    break
-  done
-fi
+mkdir -p "$CODEX_INSTALL_DIR" "$CODEX_STANDALONE_HOME"
 
-# New packages use bin/codex and bin/codex-code-mode-host. Legacy archives use
-# codex-<target> and optionally codex-code-mode-host-<target>. Normalize both.
-if [ -x "$staging_dir/bin/codex" ]; then
-  ln -sf bin/codex "$staging_dir/codex-${CODEX_TARGET}"
-  if [ -x "$staging_dir/bin/codex-code-mode-host" ]; then
-    ln -sf bin/codex-code-mode-host "$staging_dir/codex-code-mode-host"
-  fi
-elif [ -x "$staging_dir/codex-${CODEX_TARGET}" ]; then
-  if [ -x "$staging_dir/codex-code-mode-host-${CODEX_TARGET}" ]; then
-    ln -sf "codex-code-mode-host-${CODEX_TARGET}" "$staging_dir/codex-code-mode-host"
-  fi
-else
-  echo "Downloaded Codex archive did not contain a known Codex executable layout." >&2
-  find "$staging_dir" -maxdepth 3 -type f -print >&2
-  exit 1
-fi
-
-rm -rf "$CODEX_DIR"
-mkdir -p "$(dirname "$CODEX_DIR")"
-mv "$staging_dir" "$CODEX_DIR"
-trap - EXIT
-rm -f "$archive" "$host_archive"
+curl -fsSL "$INSTALL_SCRIPT_URL" | \
+  CODEX_RELEASE="$CODEX_RELEASE" \
+  CODEX_INSTALL_DIR="$CODEX_INSTALL_DIR" \
+  CODEX_HOME="$CODEX_STANDALONE_HOME" \
+  CODEX_NON_INTERACTIVE="$CODEX_NON_INTERACTIVE" \
+  sh -s -- --release "$CODEX_RELEASE"

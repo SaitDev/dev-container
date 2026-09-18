@@ -23,6 +23,7 @@ RUN apt-get update && \
 # --- Non-root user ---
 ARG USER=dev
 RUN useradd -m -s /usr/bin/zsh ${USER}
+ENV PATH="/home/${USER}/.local/bin:${PATH}"
 
 # --- SSH server ---
 RUN mkdir -p /var/run/sshd && \
@@ -110,11 +111,10 @@ RUN mkdir -p "${FNM_DIR}" && \
     cat /etc/profile.d/fnm.sh >> /home/${USER}/.zprofile
 
 # --- Install Codex ---
+ARG CODEX_VERSION=latest
 COPY scripts/download-codex.sh /usr/local/bin/download-codex.sh
 RUN chmod +x /usr/local/bin/download-codex.sh
-RUN mkdir -p /opt/codex; \
-    /usr/local/bin/download-codex.sh; \
-    ln -sf /opt/codex/bin/codex /usr/local/bin/codex
+RUN su ${USER} -c "CODEX_RELEASE=${CODEX_VERSION} /usr/local/bin/download-codex.sh"
 
 RUN echo "${USER} ALL=(ALL) NOPASSWD: /usr/local/bin/ovpn, /usr/sbin/openvpn" > /etc/sudoers.d/${USER}-openvpn && \
     chmod 440 /etc/sudoers.d/${USER}-openvpn

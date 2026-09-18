@@ -45,9 +45,8 @@ USER root
 COPY scripts/download-codex.sh /usr/local/bin/scripts/download-codex.sh
 RUN chmod +x /usr/local/bin/scripts/download-codex.sh
 
-RUN mkdir -p /opt/codex; \
-    /usr/local/bin/scripts/download-codex.sh; \
-    ln -sf /opt/codex/bin/codex /usr/local/bin/codex
+ARG CODEX_VERSION=latest
+RUN su ${USER} -c "CODEX_RELEASE=${CODEX_VERSION} /usr/local/bin/scripts/download-codex.sh"
 
 # --- Copy entrypoint & make it executable ---
 # COPY --chown=${USER}:${USER} entrypoint.sh /usr/local/bin/entrypoint.sh

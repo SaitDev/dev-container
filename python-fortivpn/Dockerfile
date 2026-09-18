@@ -20,16 +20,16 @@ RUN apt-get install -y curl
 RUN apt-get install -y git && \
     rm -rf /var/lib/apt/lists/*
 
-COPY scripts/download-codex.sh /usr/local/bin/scripts/download-codex.sh
-RUN chmod +x /usr/local/bin/scripts/download-codex.sh
-
-RUN mkdir -p /opt/codex; \
-    /usr/local/bin/scripts/download-codex.sh; \
-    ln -sf /opt/codex/bin/codex /usr/local/bin/codex
-
 # --- Non-root user ---
 ARG USER=dev
 RUN useradd -m ${USER}
+ENV PATH="/home/${USER}/.local/bin:${PATH}"
+
+# --- Install Codex ---
+ARG CODEX_VERSION=latest
+COPY scripts/download-codex.sh /usr/local/bin/scripts/download-codex.sh
+RUN chmod +x /usr/local/bin/scripts/download-codex.sh
+RUN su ${USER} -c "CODEX_RELEASE=${CODEX_VERSION} /usr/local/bin/scripts/download-codex.sh"
 
 # create ssh config folder
 RUN mkdir -p /home/${USER}/.ssh && \
@@ -49,4 +49,3 @@ RUN chmod +x /usr/local/bin/entrypoint.sh
 # USER ${USER}
 WORKDIR /home/${USER}
 ENTRYPOINT ["/usr/local/bin/entrypoint.sh"]
-

@@ -26,6 +26,7 @@ COPY --from=dockercli /usr/local/bin/docker /usr/local/bin/docker
 # --- Non-root user ---
 ARG USER=dev
 RUN useradd -m -s /usr/bin/zsh ${USER}
+ENV PATH="/home/${USER}/.local/bin:${PATH}"
 
 # --- Install Oh My Zsh ---
 RUN git clone --depth=1 https://github.com/ohmyzsh/ohmyzsh.git /home/${USER}/.oh-my-zsh && \
@@ -52,11 +53,10 @@ RUN git clone https://github.com/jenv/jenv.git "${JENV_ROOT}" && \
       > /etc/profile.d/jenv.sh
 
 # --- Install Codex
+ARG CODEX_VERSION=latest
 COPY scripts/download-codex.sh /usr/local/bin/download-codex.sh
 RUN chmod +x /usr/local/bin/download-codex.sh
-RUN mkdir -p /opt/codex; \
-    /usr/local/bin/download-codex.sh; \
-    ln -sf /opt/codex/bin/codex /usr/local/bin/codex
+RUN su ${USER} -c "CODEX_RELEASE=${CODEX_VERSION} /usr/local/bin/download-codex.sh"
 
 # create ssh config folder
 RUN mkdir -p /home/${USER}/.ssh && \
