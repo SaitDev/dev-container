@@ -4,7 +4,7 @@ set -euo pipefail
 INSTALL_SCRIPT_URL="${CODEX_INSTALL_SCRIPT_URL:-https://chatgpt.com/codex/install.sh}"
 CODEX_RELEASE="${CODEX_RELEASE:-${CODEX_VERSION:-latest}}"
 CODEX_INSTALL_DIR="${CODEX_INSTALL_DIR:-$HOME/.local/bin}"
-CODEX_STANDALONE_HOME="${CODEX_STANDALONE_HOME:-${CODEX_HOME:-$HOME/.local/share/codex-standalone}}"
+CODEX_HOME="${CODEX_HOME:-$HOME/.codex}"
 CODEX_NON_INTERACTIVE="${CODEX_NON_INTERACTIVE:-1}"
 
 usage() {
@@ -19,9 +19,7 @@ Environment:
   CODEX_RELEASE                         Version to install. Default: latest.
   CODEX_VERSION                         Backward-compatible alias for CODEX_RELEASE.
   CODEX_INSTALL_DIR                     Directory for visible codex command. Default: \$HOME/.local/bin.
-  CODEX_STANDALONE_HOME                 Package root used by the official installer.
-                                        Default: \$HOME/.local/share/codex-standalone.
-  CODEX_HOME                            Backward-compatible alias for CODEX_STANDALONE_HOME.
+  CODEX_HOME                            Codex state/package root. Default: \$HOME/.codex.
   CODEX_INSTALLER_USE_RELEASES_OPENAI_COM
                                         Set to false/0/no to force GitHub Releases.
   CODEX_NON_INTERACTIVE                 Default: 1.
@@ -58,11 +56,11 @@ if [ "$(id -u)" = "0" ] && [ "${CODEX_ALLOW_ROOT_INSTALL:-0}" != "1" ]; then
   exit 1
 fi
 
-mkdir -p "$CODEX_INSTALL_DIR" "$CODEX_STANDALONE_HOME"
+mkdir -p "$CODEX_INSTALL_DIR" "$CODEX_HOME"
 
 curl -fsSL "$INSTALL_SCRIPT_URL" | \
   CODEX_RELEASE="$CODEX_RELEASE" \
   CODEX_INSTALL_DIR="$CODEX_INSTALL_DIR" \
-  CODEX_HOME="$CODEX_STANDALONE_HOME" \
+  CODEX_HOME="$CODEX_HOME" \
   CODEX_NON_INTERACTIVE="$CODEX_NON_INTERACTIVE" \
   sh -s -- --release "$CODEX_RELEASE"
