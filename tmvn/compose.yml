@@ -23,6 +23,11 @@ services:
       - dind-runtime:/var/run/dind
       - vscode:/home/dev/.vscode
       - type: bind
+        source: ${WORKSPACE_RESOURCE:-.}/shell/zsh_history
+        target: /home/dev/.zsh_history
+        bind:
+          create_host_path: false
+      - type: bind
         source: ${WORKSPACE_RESOURCE:-.}/ssh/authorized_keys
         target: /home/dev/.ssh/shared/authorized_keys
         read_only: true
